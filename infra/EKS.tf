@@ -12,7 +12,18 @@ module "eks" {
   # Sem isto, o Terraform (provider kubernetes) e o kubectl recebem "Unauthorized".
   enable_cluster_creator_admin_permissions = true
 
-  vpc_id     = module.vpc.vpc_id
+  # Na v21 o módulo NÃO instala mais os add-ons básicos sozinho.
+  # Sem o vpc-cni os nós ficam "NotReady" (sem rede) e o node group falha
+  # com "NodeCreationFailure: Unhealthy nodes in the kubernetes cluster".
+  addons = {
+    vpc-cni = {
+      before_compute = true # instala a rede ANTES de criar os nós
+    }
+    kube-proxy = {}
+    coredns    = {}
+  }
+
+  vpc_id    = module.vpc.vpc_id
   subnet_ids = module.vpc.public_subnets
 
   eks_managed_node_groups = {
