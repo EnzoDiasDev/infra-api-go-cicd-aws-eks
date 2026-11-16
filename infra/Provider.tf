@@ -2,15 +2,19 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = ">= 4.47"
+      version = "~> 6.0"
+    }
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = "~> 2.38"
     }
   }
 
-  required_version = ">= 0.14.9"
+  required_version = ">= 1.10.0"
 }
 
 provider "aws" {
-  region  = "us-west-2"
+  region = "us-east-1"
 }
 
 provider "kubernetes" {
@@ -18,12 +22,13 @@ provider "kubernetes" {
   cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
   exec {
     api_version = "client.authentication.k8s.io/v1beta1"
-    args        = ["eks", "get-token", "--cluster-name", var.cluster_name]
+    args        = ["eks", "get-token", "--cluster-name", var.cluster_name, "--region", "us-east-1"]
     command     = "aws"
   }
 }
 
-resource "kubernetes_service" "LoadBalancer" {
+# "kubernetes_service" foi substituído por "kubernetes_service_v1" (mesmo recurso: um Service do tipo LoadBalancer)
+resource "kubernetes_service_v1" "LoadBalancer" {
   metadata {
     name = "load-balancer-go-api"
   }
@@ -37,4 +42,7 @@ resource "kubernetes_service" "LoadBalancer" {
     }
     type = "LoadBalancer"
   }
+
+  # Só cria o Service depois do cluster e das permissões de acesso estarem prontos
+  depends_on = [module.eks]
 }
