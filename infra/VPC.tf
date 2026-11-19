@@ -1,3 +1,6 @@
+# Exceção aceita na varredura de IaC: as subnets públicas dão IP público aos
+# nós (ver comentário de map_public_ip_on_launch abaixo).
+#trivy:ignore:AWS-0164
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "~> 6.0"
@@ -24,7 +27,8 @@ module "vpc" {
 
   create_database_subnet_group           = true
   create_database_subnet_route_table     = true
-  create_database_internet_gateway_route = true
+  # Sem rota das subnets de banco para a internet: o RDS não é público.
+  create_database_internet_gateway_route = false
 
   enable_dns_hostnames = true
   enable_dns_support   = true

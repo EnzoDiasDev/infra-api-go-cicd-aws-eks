@@ -53,6 +53,18 @@ spec:
               secretKeyRef:
                 name: port
                 key: PORT
+           # Chaves de API das rotas /alunos. O Secret "api-keys" é criado pelo
+           # workflow de deploy a partir do Secrets Manager.
+           - name: API_KEY_LEITURA
+             valueFrom:
+              secretKeyRef:
+                name: api-keys
+                key: API_KEY_LEITURA
+           - name: API_KEY_ADMIN
+             valueFrom:
+              secretKeyRef:
+                name: api-keys
+                key: API_KEY_ADMIN
          livenessProbe:
            httpGet:
              path: /bruno

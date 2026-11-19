@@ -1,0 +1,15 @@
+# Exceções aceitas na varredura de IaC (Trivy) que não dá para marcar com
+# comentário no próprio arquivo. Cada exceção vale só para o caminho listado.
+
+misconfigurations:
+  # Contêiner rodando como root e sem filesystem somente leitura. Pendência
+  # registrada no SSDLC, fase 6 (contêiner roda como root). Ao adicionar o
+  # securityContext no go.yaml, apague estas exceções.
+  - id: KSV-0014
+    paths:
+      - "go.yaml"
+    statement: "Pendência da fase 6 do SSDLC: securityContext no go.yaml"
+  - id: KSV-0118
+    paths:
+      - "go.yaml"
+    statement: "Pendência da fase 6 do SSDLC: securityContext no go.yaml"
