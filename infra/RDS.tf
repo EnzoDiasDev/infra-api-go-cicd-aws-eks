@@ -1,16 +1,19 @@
 resource "aws_db_instance" "default" {
-  allocated_storage    = 20 # mínimo aceito pelo RDS PostgreSQL (10 é recusado)
-  db_name              = "root"
-  engine               = "postgres"
-  engine_version       = "17" # fixa a versão principal para combinar com o parameter group abaixo
-  instance_class       = "db.t3.micro"
-  username             = "postgres"
-  password             = "rootroot"
-  skip_final_snapshot  = true
-  publicly_accessible  = false
-  db_subnet_group_name = module.vpc.database_subnet_group_name
+  allocated_storage = 20 # mínimo aceito pelo RDS PostgreSQL (10 é recusado)
+  db_name           = "root"
+  engine            = "postgres"
+  engine_version    = "17" # fixa a versão principal para combinar com o parameter group abaixo
+  instance_class    = "db.t3.micro"
+  username          = "postgres"
+  # A senha é gerada pelo Terraform (Segredos.tf) e guardada no Secrets Manager.
+  # Nada de senha escrita no código.
+  password               = random_password.db.result
+  skip_final_snapshot    = true
+  storage_encrypted      = true # disco do banco criptografado (chave padrão da AWS para o RDS)
+  publicly_accessible    = false
+  db_subnet_group_name   = module.vpc.database_subnet_group_name
   vpc_security_group_ids = [aws_security_group.db.id]
-  parameter_group_name = aws_db_parameter_group.postgres.name
+  parameter_group_name   = aws_db_parameter_group.postgres.name
 }
 
 # A partir do Postgres 15, o RDS exige SSL por padrão (rds.force_ssl = 1).

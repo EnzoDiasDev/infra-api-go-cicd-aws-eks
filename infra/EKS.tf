@@ -1,3 +1,11 @@
+# Exceções aceitas na varredura de IaC:
+# - AWS-0040 e AWS-0041: endpoint do cluster público, porque o kubectl roda no
+#   runner do GitHub Actions, fora da VPC. Pendência registrada no SSDLC,
+#   fase 8 (restringir os IPs do endpoint).
+# - AWS-0104: os nós precisam sair para a internet para baixar imagens.
+#trivy:ignore:AWS-0040
+#trivy:ignore:AWS-0041
+#trivy:ignore:AWS-0104
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "~> 21.0"
